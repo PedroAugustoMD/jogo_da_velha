@@ -13,6 +13,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   static const contTabuleiro = 3;
   static const double tamanho = 92;
+  String ultimaJogada = Jogador.none;
   late List<List<String>> tabuleiro;
 
   @override
@@ -62,9 +63,20 @@ class _MyHomePageState extends State<MyHomePage> {
           minimumSize: Size(tamanho, tamanho),
           primary: Colors.white,
         ),
-        child: Text(valor, style: TextStyle(fontSize: 32)),
-        onPressed: () {},
+        child: Text(valor, style: TextStyle(color: Colors.black, fontSize: 32)),
+        onPressed: () => selecionarCampo(valor, x, y),
       ),
     );
+  }
+
+  void selecionarCampo(String valor, int x, int y) {
+    if (valor == Jogador.none) {
+      final novoValor = ultimaJogada == Jogador.X ? Jogador.O : Jogador.X;
+
+      setState(() {
+        ultimaJogada = novoValor;
+        tabuleiro[x][y] = novoValor;
+      });
+    }
   }
 }
