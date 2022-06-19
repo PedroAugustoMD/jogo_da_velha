@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jogo_da_velha/utils.dart';
+import 'package:jogo_da_velha/models/jogador.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,12 +47,6 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class Jogador {
-  static const none = '';
-  static const x = 'X';
-  static const O = 'O';
 }
 
 class _MyHomePageState extends State<MyHomePage> {
