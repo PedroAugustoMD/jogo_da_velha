@@ -28,9 +28,14 @@ class _MyHomePageState extends State<MyHomePage> {
         (_) => List.generate(contTabuleiro, (_) => Jogador.none),
       ));
 
+  Color getCorFundo() {
+    final jogadaAtual = ultimaJogada == Jogador.X ? Jogador.O : Jogador.X;
+    return getCorCampo(jogadaAtual).withAlpha(150);
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.blue,
+        backgroundColor: getCorFundo(),
         appBar: AppBar(
           title: Text(widget.title),
         ),
@@ -53,17 +58,29 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Color getCorCampo(String valor) {
+    switch (valor) {
+      case Jogador.O:
+        return Colors.blue;
+      case Jogador.X:
+        return Colors.red;
+      default:
+        return Colors.white;
+    }
+  }
+
   Widget construirCampo(int x, int y) {
     final valor = tabuleiro[x][y];
+    final cor = getCorCampo(valor);
 
     return Container(
       margin: EdgeInsets.all(4),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           minimumSize: Size(tamanho, tamanho),
-          primary: Colors.white,
+          primary: cor,
         ),
-        child: Text(valor, style: TextStyle(color: Colors.black, fontSize: 32)),
+        child: Text(valor, style: TextStyle(fontSize: 32)),
         onPressed: () => selecionarCampo(valor, x, y),
       ),
     );
