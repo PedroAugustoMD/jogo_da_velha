@@ -94,6 +94,48 @@ class _MyHomePageState extends State<MyHomePage> {
         ultimaJogada = novoValor;
         tabuleiro[x][y] = novoValor;
       });
+      if (venceu(x, y)) {
+        terminou('Jogador $novoValor ganhou!');
+      } else if (empate()) {
+        terminou('Empate');
+      }
     }
   }
+
+  bool empate() => tabuleiro
+      .every((values) => values.every((value) => value != Jogador.none));
+
+  /// Check out logic here: https://stackoverflow.com/a/1058804
+  bool venceu(int x, int y) {
+    var col = 0, row = 0, diag = 0, rdiag = 0;
+    final player = tabuleiro[x][y];
+    const n = contTabuleiro;
+
+    for (int i = 0; i < n; i++) {
+      if (tabuleiro[x][i] == player) col++;
+      if (tabuleiro[i][y] == player) row++;
+      if (tabuleiro[i][i] == player) diag++;
+      if (tabuleiro[i][n - i - 1] == player) rdiag++;
+    }
+
+    return row == n || col == n || diag == n || rdiag == n;
+  }
+
+  Future terminou(String titulo) => showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: Text(titulo),
+          content: Text('Pressione o botão para reiniciar o jogo'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                setCamposVazios();
+                Navigator.of(context).pop();
+              },
+              child: Text('Reiniciar'),
+            )
+          ],
+        ),
+      );
 }
