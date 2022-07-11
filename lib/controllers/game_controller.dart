@@ -55,7 +55,7 @@ class JogoDaVelha extends State<MyHomePage> {
   bool empate() => tabuleiro
       .every((values) => values.every((value) => value != Jogador.none));
 
-  /// Check out logic here: https://stackoverflow.com/a/1058804
+  /// Lógica: https://stackoverflow.com/a/1058804
   bool venceu(int x, int y) {
     var col = 0, row = 0, diag = 0, rdiag = 0;
     final player = tabuleiro[x][y];
