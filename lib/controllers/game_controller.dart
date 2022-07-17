@@ -1,53 +1,35 @@
-import 'package:flutter/material.dart';
-import 'package:jogo_da_velha/utils.dart';
 import 'package:jogo_da_velha/models/jogador.dart';
-import 'package:jogo_da_velha/pages/game_page.dart';
 import 'package:jogo_da_velha/pages/game_view.dart';
+import 'package:jogo_da_velha/models/observable.dart';
 
-class JogoDaVelha extends State<MyHomePage> {
+class JogoDaVelha implements Observable {
   static const contTabuleiro = 3;
   static const double tamanho = 92;
   String ultimaJogada = Jogador.none;
   late List<List<String>> tabuleiro;
-  GameView view = GameView();
 
   @override
-  void initState() {
-    super.initState();
-
-    setCamposVazios();
+  void notifyObserver(
+      String valor, List<List<String>> tabuleiro, int x, int y) {
+    ultimaJogada = valor;
+    tabuleiro[x][y] = valor;
   }
 
-  void setCamposVazios() => setState(() => tabuleiro = List.generate(
-        contTabuleiro,
-        (_) => List.generate(contTabuleiro, (_) => Jogador.none),
-      ));
+  void setCamposVazios(GameView view) =>
+      view.setState(() => tabuleiro = List.generate(
+            contTabuleiro,
+            (_) => List.generate(contTabuleiro, (_) => Jogador.none),
+          ));
 
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: view.getCorFundo(this),
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: Utils.modelBuilder(
-              tabuleiro, (x, value) => view.construirLinha(x, this)),
-        ),
-      );
-
-  void selecionarCampo(String valor, int x, int y) {
+  void selecionarCampo(String valor, int x, int y, GameView view) {
     if (valor == Jogador.none) {
       final novoValor = ultimaJogada == Jogador.X ? Jogador.O : Jogador.X;
-
-      setState(() {
-        ultimaJogada = novoValor;
-        tabuleiro[x][y] = novoValor;
-      });
+      notifyObserver(novoValor, tabuleiro, x, y);
+      view.update();
       if (venceu(x, y)) {
-        view.terminou('Jogador $novoValor ganhou!', this);
+        view.terminou('Jogador $novoValor ganhou!');
       } else if (empate()) {
-        view.terminou('Empate', this);
+        view.terminou('Empate');
       }
     }
   }
