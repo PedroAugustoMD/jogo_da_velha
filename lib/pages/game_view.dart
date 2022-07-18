@@ -2,24 +2,54 @@ import 'package:flutter/material.dart';
 import 'package:jogo_da_velha/controllers/game_controller.dart';
 import 'package:jogo_da_velha/models/jogador.dart';
 import 'package:jogo_da_velha/utils.dart';
+import 'package:jogo_da_velha/pages/game_page.dart';
 
-class GameView {
-  Color getCorFundo(JogoDaVelha jogoDaVelha) {
+class GameView extends State<MyHomePage> {
+  JogoDaVelha controller = JogoDaVelha();
+
+  Color getCorFundo() {
     final jogadaAtual =
-        jogoDaVelha.ultimaJogada == Jogador.X ? Jogador.O : Jogador.X;
+        controller.ultimaJogada == Jogador.X ? Jogador.O : Jogador.X;
     return getCorCampo(jogadaAtual).withAlpha(150);
   }
 
-  Widget construirLinha(int x, JogoDaVelha jogoDaVelha) {
-    final valores = jogoDaVelha.tabuleiro[x];
+  @override
+  void initState() {
+    super.initState();
+
+    controller.setCamposVazios(this);
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: getCorFundo(),
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: Utils.modelBuilder(
+              controller.tabuleiro, (x, value) => construirLinha(x)),
+        ),
+      );
+
+  Widget construirLinha(int x) {
+    final valores = controller.tabuleiro[x];
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: Utils.modelBuilder(
         valores,
-        (y, value) => construirCampo(x, y, jogoDaVelha),
+        (y, value) => construirCampo(x, y),
       ),
     );
+  }
+
+  void update() {
+    setState(() {
+      controller.ultimaJogada;
+      controller.tabuleiro;
+    });
   }
 
   Color getCorCampo(String valor) {
@@ -33,8 +63,8 @@ class GameView {
     }
   }
 
-  Widget construirCampo(int x, int y, JogoDaVelha jogoDaVelha) {
-    final valor = jogoDaVelha.tabuleiro[x][y];
+  Widget construirCampo(int x, int y) {
+    final valor = controller.tabuleiro[x][y];
     final cor = getCorCampo(valor);
 
     return Container(
@@ -45,13 +75,13 @@ class GameView {
           primary: cor,
         ),
         child: Text(valor, style: TextStyle(fontSize: 32)),
-        onPressed: () => jogoDaVelha.selecionarCampo(valor, x, y),
+        onPressed: () => controller.selecionarCampo(valor, x, y, this),
       ),
     );
   }
 
-  Future terminou(String titulo, JogoDaVelha jogoDaVelha) => showDialog(
-        context: jogoDaVelha.context,
+  Future terminou(String titulo) => showDialog(
+        context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: Text(titulo),
@@ -59,7 +89,7 @@ class GameView {
           actions: [
             ElevatedButton(
               onPressed: () {
-                jogoDaVelha.setCamposVazios();
+                controller.setCamposVazios(this);
                 Navigator.of(context).pop();
               },
               child: Text('Reiniciar'),
